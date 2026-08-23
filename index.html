@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Timer</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #d58a86;
+            --card: rgba(255, 255, 255, 0.09);
+            --white: #ffffff;
+            --accent: #cf8581;
+            --border: rgba(255, 255, 255, 0.25);
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            min-height: 100vh;
+
+            background: var(--bg);
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            transition: 0.4s ease;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           APP
+        ========================= */
+
+        .app {
+            width: 100%;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 30px 20px;
+        }
+
+        .container {
+            width: 650px;
+            max-width: 100%;
+        }
+
+
+        /* =========================
+           TIMER CARD
+        ========================= */
+
+        .timer-card {
+            min-height: 700px;
+
+            padding: 60px 65px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            background: var(--card);
+
+            border: 2px solid var(--border);
+
+            border-radius: 70px;
+
+            backdrop-filter: blur(12px);
+
+            box-shadow:
+                0 25px 60px rgba(100, 50, 50, 0.12),
+                inset 0 0 40px rgba(255, 255, 255, 0.04);
+        }
+
+
+        /* =========================
+           TABS
+        ========================= */
+
+        .tabs {
+            width: 100%;
+            height: 100px;
+
+            padding: 8px;
+
+            display: flex;
+            align-items: center;
+
+            background: rgba(255, 255, 255, 0.12);
+
+            border-radius: 55px;
+        }
+
+        .tab {
+            flex: 1;
+
+            height: 84px;
+
+            border: none;
+            border-radius: 50px;
+
+            background: transparent;
+
+            color: rgba(255, 255, 255, 0.85);
+
+            font-size: 20px;
+            font-weight: 600;
+
+            transition: 0.3s;
+        }
+
+        .tab.active {
+            background: white;
+
+            color: var(--accent);
+
+            box-shadow:
+                0 8px 20px rgba(100, 50, 50, 0.1);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+
+        /* =========================
+           TIMER
+        ========================= */
+
+        .timer {
+            margin-top: 65px;
+
+            font-size: 120px;
+            font-weight: 500;
+
+            line-height: 1;
+
+            letter-spacing: -5px;
+
+            user-select: none;
+        }
+
+
+        /* =========================
+           SESSION INFO
+        ========================= */
+
+        .session-info {
+            margin-top: 15px;
+
+            min-height: 23px;
+
+            font-size: 15px;
+
+            opacity: 0.75;
+
+            text-align: center;
+        }
+
+
+        /* =========================
+           PROGRESS
+        ========================= */
+
+        .progress {
+            width: 85%;
+            height: 5px;
+
+            margin-top: 25px;
+
+            border-radius: 10px;
+
+            background: rgba(255, 255, 255, 0.15);
+
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+
+            background: white;
+
+            border-radius: 10px;
+
+            transition: width 0.5s linear;
+        }
+
+
+        /* =========================
+           START BUTTON
+        ========================= */
+
+        .start-btn {
+            width: 280px;
+            height: 95px;
+
+            margin-top: 40px;
+
+            border: none;
+            border-radius: 60px;
+
+            background: white;
+
+            color: var(--accent);
+
+            font-size: 25px;
+            font-weight: 600;
+
+            letter-spacing: 3px;
+
+            box-shadow:
+                0 12px 25px rgba(100, 50, 50, 0.12);
+
+            transition: 0.25s;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 18px 30px rgba(100, 50, 50, 0.18);
+        }
+
+        .start-btn:active {
+            transform: scale(0.97);
+        }
+
+
+        /* =========================
+           STOP ALARM BUTTON
+        ========================= */
+
+        .stop-alarm-btn {
+            display: none;
+
+            width: 280px;
+            height: 65px;
+
+            margin-top: 20px;
+
+            border: none;
+
+            border-radius: 40px;
+
+            background: #ffffff;
+
+            color: #cf8581;
+
+            font-size: 17px;
+
+            font-weight: 600;
+
+            letter-spacing: 1px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 10px 25px rgba(80, 30, 30, 0.15);
+
+            animation: alarmButton 0.9s infinite;
+        }
+
+        .stop-alarm-btn.show {
+            display: block;
+        }
+
+        @keyframes alarmButton {
+
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.04);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+
+        }
+
+
+        /* =========================
+           CONTROLS
+        ========================= */
+
+        .controls {
+            display: flex;
+
+            gap: 18px;
+
+            margin-top: 35px;
+        }
+
+        .icon-btn {
+            width: 62px;
+            height: 62px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            border-radius: 50%;
+
+            border: 2px solid var(--border);
+
+            background: rgba(255, 255, 255, 0.08);
+
+            color: white;
+
+            font-size: 26px;
+
+            transition: 0.25s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+
+            transform: translateY(-2px);
+        }
+
+
+        /* =========================
+           SESSION DOTS
+        ========================= */
+
+        .session-dots {
+            display: flex;
+
+            gap: 9px;
+
+            margin-top: 25px;
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .dot.completed {
+            background: white;
+        }
+
+
+        /* =========================
+           BOTTOM LINE
+        ========================= */
+
+        .bottom-line {
+            width: 100%;
+            height: 18px;
+
+            margin-top: 40px;
+
+            border-radius: 20px;
+
+            background: white;
+        }
+
+
+        /* =========================
+           SETTINGS MODAL
+        ========================= */
+
+        .modal {
+            position: fixed;
+
+            inset: 0;
+
+            display: none;
+
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+
+            background: rgba(60, 30, 30, 0.4);
+
+            backdrop-filter: blur(8px);
+
+            z-index: 100;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .settings {
+            width: 430px;
+            max-width: 100%;
+
+            padding: 30px;
+
+            background: #e2a19d;
+
+            border: 2px solid rgba(255, 255, 255, 0.25);
+
+            border-radius: 30px;
+
+            box-shadow:
+                0 30px 80px rgba(60, 30, 30, 0.25);
+        }
+
+        .settings-header {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 25px;
+        }
+
+        .settings-header h2 {
+            font-size: 25px;
+        }
+
+        .close-btn {
+            width: 40px;
+            height: 40px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.15);
+
+            color: white;
+
+            font-size: 22px;
+        }
+
+        .setting {
+            margin-bottom: 20px;
+        }
+
+        .setting label {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 8px;
+
+            font-size: 14px;
+        }
+
+        .setting input[type="number"] {
+            width: 100%;
+
+            padding: 12px 15px;
+
+            border: 1px solid rgba(255, 255, 255, 0.3);
+
+            border-radius: 12px;
+
+            outline: none;
+
+            background: rgba(255, 255, 255, 0.15);
+
+            color: white;
+
+            font-size: 16px;
+        }
+
+        .switch-row {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 12px 0;
+        }
+
+        .switch {
+            position: relative;
+
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+
+            inset: 0;
+
+            border-radius: 30px;
+
+            background: rgba(255, 255, 255, 0.2);
+
+            transition: 0.3s;
+        }
+
+        .slider::before {
+            content: "";
+
+            position: absolute;
+
+            width: 22px;
+            height: 22px;
+
+            left: 3px;
+            top: 3px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            transition: 0.3s;
+        }
+
+        .switch input:checked+.slider {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .switch input:checked+.slider::before {
+            transform: translateX(22px);
+        }
+
+        .save-btn {
+            width: 100%;
+
+            height: 50px;
+
+            margin-top: 10px;
+
+            border: none;
+
+            border-radius: 15px;
+
+            background: white;
+
+            color: var(--accent);
+
+            font-size: 16px;
+
+            font-weight: 600;
+        }
+
+
+        /* =========================
+           NOTIFICATION
+        ========================= */
+
+        .notification {
+            position: fixed;
+
+            top: 25px;
+            right: 25px;
+
+            padding: 15px 20px;
+
+            background: white;
+
+            color: var(--accent);
+
+            border-radius: 15px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.15);
+
+            transform: translateX(150%);
+
+            transition: 0.4s;
+
+            z-index: 200;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+
+        /* =========================
+           ALARM MODAL
+        ========================= */
+
+        .alarm-modal {
+            position: fixed;
+
+            inset: 0;
+
+            display: none;
+
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+
+            background: rgba(60, 25, 25, 0.45);
+
+            backdrop-filter: blur(10px);
+
+            z-index: 500;
+        }
+
+        .alarm-modal.show {
+            display: flex;
+        }
+
+        .alarm-box {
+            width: 420px;
+            max-width: 100%;
+
+            padding: 40px 30px;
+
+            text-align: center;
+
+            background: #e2a19d;
+
+            border: 2px solid rgba(255, 255, 255, 0.35);
+
+            border-radius: 35px;
+
+            box-shadow:
+                0 30px 80px rgba(50, 20, 20, 0.3);
+
+            animation: alarmAppear 0.35s ease;
+        }
+
+        @keyframes alarmAppear {
+
+            from {
+                transform: scale(0.8);
+
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+
+                opacity: 1;
+            }
+
+        }
+
+        .alarm-icon {
+            width: 85px;
+            height: 85px;
+
+            margin: 0 auto 20px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.2);
+
+            font-size: 42px;
+
+            animation: shake 0.7s infinite;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: rotate(0);
+            }
+
+            25% {
+                transform: rotate(-10deg);
+            }
+
+            75% {
+                transform: rotate(10deg);
+            }
+
+        }
+
+        .alarm-box h2 {
+            color: white;
+
+            font-size: 30px;
+
+            margin-bottom: 10px;
+        }
+
+        .alarm-box p {
+            color: rgba(255, 255, 255, 0.85);
+
+            font-size: 15px;
+
+            margin-bottom: 25px;
+        }
+
+        .alarm-actions {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 12px;
+        }
+
+        .done-btn,
+        .next-btn {
+            width: 100%;
+
+            height: 55px;
+
+            border: none;
+
+            border-radius: 16px;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+        .done-btn {
+            background: white;
+
+            color: #cf8581;
+        }
+
+        .next-btn {
+            background: rgba(255, 255, 255, 0.15);
+
+            color: white;
+
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .done-btn:hover,
+        .next-btn:hover {
+            transform: translateY(-2px);
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .timer-card {
+                min-height: auto;
+
+                padding: 40px 25px;
+
+                border-radius: 45px;
+            }
+
+            .tabs {
+                height: 75px;
+            }
+
+            .tab {
+                height: 61px;
+
+                font-size: 14px;
+            }
+
+            .timer {
+                margin-top: 55px;
+
+                font-size: 75px;
+
+                letter-spacing: -3px;
+            }
+
+            .start-btn {
+                width: 220px;
+
+                height: 80px;
+
+                font-size: 20px;
+            }
+
+            .stop-alarm-btn {
+                width: 220px;
+            }
+
+            .icon-btn {
+                width: 58px;
+                height: 58px;
+            }
+
+            .bottom-line {
+                height: 14px;
+            }
+        }
+
+        @media (max-width: 400px) {
+
+            .timer {
+                font-size: 60px;
+            }
+
+            .tab {
+                font-size: 11px;
+            }
+
+            .controls {
+                gap: 10px;
+            }
+
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <div class="app">
+
+        <div class="container">
+
+            <div class="timer-card">
+
+
+                <!-- =========================
+                 TABS
+            ========================== -->
+
+                <div class="tabs">
+
+                    <button class="tab active" data-mode="pomodoro">
+                        Focus<br>Time
+                    </button>
+
+                    <button class="tab" data-mode="short">
+                        Short<br>Break
+                    </button>
+
+                    <button class="tab" data-mode="long">
+                        Long<br>Break
+                    </button>
+
+                </div>
+
+
+                <!-- TIMER -->
+
+                <div class="timer" id="timer">
+                    25:00
+                </div>
+
+
+                <!-- SESSION INFO -->
+
+                <div class="session-info" id="sessionInfo">
+                    Focus time
+                </div>
+
+
+                <!-- PROGRESS -->
+
+                <div class="progress">
+
+                    <div class="progress-bar" id="progressBar"></div>
+
+                </div>
+
+
+                <!-- START -->
+
+                <button class="start-btn" id="startBtn">
+                    START
+                </button>
+
+
+                <!-- STOP ALARM -->
+
+                <button class="stop-alarm-btn" id="stopAlarmBtn">
+                    🔕 STOP ALARM
+                </button>
+
+
+                <!-- CONTROLS -->
+
+                <div class="controls">
+
+                    <button class="icon-btn" id="resetBtn" title="Reset">
+                        ↶
+                    </button>
+
+                    <button class="icon-btn" id="settingsBtn" title="Settings">
+                        ⚙
+                    </button>
+
+                    <button class="icon-btn" id="skipBtn" title="Skip">
+                        ⏭
+                    </button>
+
+                    <button class="icon-btn" id="fullscreenBtn" title="Fullscreen">
+                        ⛶
+                    </button>
+
+                </div>
+
+
+                <!-- SESSION DOTS -->
+
+                <div class="session-dots" id="sessionDots">
+
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+
+                </div>
+
+            </div>
+
+
+            <!-- BOTTOM LINE -->
+
+            <div class="bottom-line"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+     SETTINGS
+========================= -->
+
+    <div class="modal" id="settingsModal">
+
+        <div class="settings">
+
+            <div class="settings-header">
+
+                <h2>Settings</h2>
+
+                <button class="close-btn" id="closeSettings">
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- Pomodoro -->
+
+            <div class="setting">
+
+                <label>
+
+                    <span>Pomodoro</span>
+
+                    <span>minutes</span>
+
+                </label>
+
+                <input type="number" id="pomodoroInput" min="1" max="120">
+
+            </div>
+
+
+            <!-- Short Break -->
+
+            <div class="setting">
+
+                <label>
+
+                    <span>Short Break</span>
+
+                    <span>minutes</span>
+
+                </label>
+
+                <input type="number" id="shortInput" min="1" max="60">
+
+            </div>
+
+
+            <!-- Long Break -->
+
+            <div class="setting">
+
+                <label>
+
+                    <span>Long Break</span>
+
+                    <span>minutes</span>
+
+                </label>
+
+                <input type="number" id="longInput" min="1" max="120">
+
+            </div>
+
+
+            <!-- Auto Start -->
+
+            <div class="switch-row">
+
+                <span>
+                    Auto start next session
+                </span>
+
+                <label class="switch">
+
+                    <input type="checkbox" id="autoStart">
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <!-- Sound -->
+
+            <div class="switch-row">
+
+                <span>
+                    Alarm sound
+                </span>
+
+                <label class="switch">
+
+                    <input type="checkbox" id="soundEnabled">
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <!-- Browser notification -->
+
+            <div class="switch-row">
+
+                <span>
+                    Browser notification
+                </span>
+
+                <label class="switch">
+
+                    <input type="checkbox" id="notificationEnabled">
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <button class="save-btn" id="saveSettings">
+                SAVE SETTINGS
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+     TIME UP MODAL
+========================= -->
+
+    <div class="alarm-modal" id="alarmModal">
+
+        <div class="alarm-box">
+
+            <div class="alarm-icon">
+                🔔
+            </div>
+
+            <h2>
+                Time's Up!
+            </h2>
+
+            <p id="alarmMessage">
+                Your session is finished.
+            </p>
+
+            <div class="alarm-actions">
+
+                <button class="done-btn" id="doneBtn">
+                    ✓ STOP ALARM
+                </button>
+
+                <button class="next-btn" id="nextBtn">
+                    ⏭ STOP & START NEXT
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- NOTIFICATION -->
+
+    <div class="notification" id="notification">
+        Time is up!
+    </div>
+
+
+    <script>
+
+        /* =====================================================
+           DEFAULT SETTINGS
+        ===================================================== */
+
+        const defaultSettings = {
+
+            pomodoro: 25,
+
+            short: 5,
+
+            long: 15,
+
+            autoStart: false,
+
+            sound: true,
+
+            notification: true
+
+        };
+
+
+        /* =====================================================
+           LOAD SETTINGS
+        ===================================================== */
+
+        let settings =
+            JSON.parse(
+                localStorage.getItem(
+                    "pomodoroSettings"
+                )
+            ) || defaultSettings;
+
+
+        /* =====================================================
+           VARIABLES
+        ===================================================== */
+
+        let currentMode = "pomodoro";
+
+        let timerSeconds =
+            settings.pomodoro * 60;
+
+        let totalSeconds =
+            timerSeconds;
+
+        let timerInterval = null;
+
+        let running = false;
+
+        let completedSessions =
+            Number(
+                localStorage.getItem(
+                    "completedSessions"
+                )
+            ) || 0;
+
+
+        /* =====================================================
+           ALARM VARIABLES
+        ===================================================== */
+
+        let alarmContext = null;
+
+        let alarmInterval = null;
+
+        let alarmOscillator = null;
+
+        let alarmGain = null;
+
+        let alarmPlaying = false;
+
+
+        /* =====================================================
+           ELEMENTS
+        ===================================================== */
+
+        const timerElement =
+            document.getElementById("timer");
+
+        const startBtn =
+            document.getElementById("startBtn");
+
+        const resetBtn =
+            document.getElementById("resetBtn");
+
+        const skipBtn =
+            document.getElementById("skipBtn");
+
+        const settingsBtn =
+            document.getElementById("settingsBtn");
+
+        const fullscreenBtn =
+            document.getElementById("fullscreenBtn");
+
+        const progressBar =
+            document.getElementById("progressBar");
+
+        const sessionInfo =
+            document.getElementById("sessionInfo");
+
+        const tabs =
+            document.querySelectorAll(".tab");
+
+        const dots =
+            document.querySelectorAll(".dot");
+
+
+        /* Settings */
+
+        const settingsModal =
+            document.getElementById("settingsModal");
+
+        const closeSettings =
+            document.getElementById("closeSettings");
+
+        const saveSettings =
+            document.getElementById("saveSettings");
+
+        const pomodoroInput =
+            document.getElementById("pomodoroInput");
+
+        const shortInput =
+            document.getElementById("shortInput");
+
+        const longInput =
+            document.getElementById("longInput");
+
+        const autoStart =
+            document.getElementById("autoStart");
+
+        const soundEnabled =
+            document.getElementById("soundEnabled");
+
+        const notificationEnabled =
+            document.getElementById(
+                "notificationEnabled"
+            );
+
+
+        /* Notification */
+
+        const notificationBox =
+            document.getElementById(
+                "notification"
+            );
+
+
+        /* Alarm */
+
+        const alarmModal =
+            document.getElementById(
+                "alarmModal"
+            );
+
+        const doneBtn =
+            document.getElementById(
+                "doneBtn"
+            );
+
+        const nextBtn =
+            document.getElementById(
+                "nextBtn"
+            );
+
+        const stopAlarmBtn =
+            document.getElementById(
+                "stopAlarmBtn"
+            );
+
+
+        /* =====================================================
+           LOAD SETTINGS INTO UI
+        ===================================================== */
+
+        function loadSettingsUI() {
+
+            pomodoroInput.value =
+                settings.pomodoro;
+
+            shortInput.value =
+                settings.short;
+
+            longInput.value =
+                settings.long;
+
+            autoStart.checked =
+                settings.autoStart;
+
+            soundEnabled.checked =
+                settings.sound;
+
+            notificationEnabled.checked =
+                settings.notification;
+
+        }
+
+        loadSettingsUI();
+
+
+        /* =====================================================
+           GET DURATION
+        ===================================================== */
+
+        function getDuration(mode) {
+
+            if (mode === "pomodoro") {
+
+                return settings.pomodoro * 60;
+
+            }
+
+            if (mode === "short") {
+
+                return settings.short * 60;
+
+            }
+
+            if (mode === "long") {
+
+                return settings.long * 60;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           UPDATE DISPLAY
+        ===================================================== */
+
+        function updateDisplay() {
+
+            const minutes =
+                Math.floor(
+                    timerSeconds / 60
+                );
+
+            const seconds =
+                timerSeconds % 60;
+
+
+            timerElement.textContent =
+                String(minutes).padStart(2, "0")
+                + ":"
+                + String(seconds).padStart(2, "0");
+
+
+            /* Progress */
+
+            const progress =
+                (
+                    (totalSeconds - timerSeconds)
+                    / totalSeconds
+                ) * 100;
+
+
+            progressBar.style.width =
+                `${progress}%`;
+
+
+            /* Browser title */
+
+            document.title =
+                `${timerElement.textContent} — Pomodoro`;
+
+
+            /* Session information */
+
+            if (currentMode === "pomodoro") {
+
+                sessionInfo.textContent =
+                    `Focus time • Session ${completedSessions + 1
+                    }`;
+
+            }
+
+            else if (currentMode === "short") {
+
+                sessionInfo.textContent =
+                    "Short break • Recharge";
+
+            }
+
+            else {
+
+                sessionInfo.textContent =
+                    "Long break • Relax";
+
+            }
+
+
+            updateDots();
+
+        }
+
+
+        /* =====================================================
+           START / PAUSE
+        ===================================================== */
+
+        function startTimer() {
+
+            if (alarmPlaying) {
+                return;
+            }
+
+
+            if (running) {
+
+                pauseTimer();
+
+                return;
+
+            }
+
+
+            running = true;
+
+            startBtn.textContent =
+                "PAUSE";
+
+
+            timerInterval =
+                setInterval(() => {
+
+                    if (timerSeconds > 0) {
+
+                        timerSeconds--;
+
+                        updateDisplay();
+
+                    }
+
+                    else {
+
+                        finishSession();
+
+                    }
+
+                }, 1000);
+
+        }
+
+
+        /* =====================================================
+           PAUSE
+        ===================================================== */
+
+        function pauseTimer() {
+
+            clearInterval(
+                timerInterval
+            );
+
+            timerInterval = null;
+
+            running = false;
+
+            startBtn.textContent =
+                "START";
+
+        }
+
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        function resetTimer() {
+
+            pauseTimer();
+
+            stopAlarm();
+
+            alarmModal.classList.remove(
+                "show"
+            );
+
+            stopAlarmBtn.classList.remove(
+                "show"
+            );
+
+            timerSeconds =
+                getDuration(currentMode);
+
+            totalSeconds =
+                timerSeconds;
+
+            updateDisplay();
+
+        }
+
+
+        /* =====================================================
+           START CONTINUOUS ALARM
+        ===================================================== */
+
+        function startAlarm() {
+
+            if (alarmPlaying) {
+                return;
+            }
+
+            if (!settings.sound) {
+                return;
+            }
+
+
+            const AudioContext =
+                window.AudioContext ||
+                window.webkitAudioContext;
+
+
+            if (!AudioContext) {
+                return;
+            }
+
+
+            alarmContext =
+                new AudioContext();
+
+
+            /*
+                Resume audio context.
+            */
+
+            if (
+                alarmContext.state ===
+                "suspended"
+            ) {
+
+                alarmContext.resume();
+
+            }
+
+
+            alarmPlaying = true;
+
+
+            function beep() {
+
+                if (!alarmPlaying) {
+                    return;
+                }
+
+
+                alarmOscillator =
+                    alarmContext.createOscillator();
+
+                alarmGain =
+                    alarmContext.createGain();
+
+
+                alarmOscillator.connect(
+                    alarmGain
+                );
+
+                alarmGain.connect(
+                    alarmContext.destination
+                );
+
+
+                /*
+                    Alarm frequency
+                */
+
+                alarmOscillator.frequency.value =
+                    850;
+
+                alarmOscillator.type =
+                    "sine";
+
+
+                const now =
+                    alarmContext.currentTime;
+
+
+                /*
+                    Fade in
+                */
+
+                alarmGain.gain.setValueAtTime(
+                    0.001,
+                    now
+                );
+
+
+                alarmGain.gain.exponentialRampToValueAtTime(
+                    0.5,
+                    now + 0.05
+                );
+
+
+                /*
+                    Fade out
+                */
+
+                alarmGain.gain.exponentialRampToValueAtTime(
+                    0.001,
+                    now + 0.45
+                );
+
+
+                alarmOscillator.start(now);
+
+
+                alarmOscillator.stop(
+                    now + 0.5
+                );
+
+            }
+
+
+            /*
+                First alarm
+            */
+
+            beep();
+
+
+            /*
+                Repeat until user stops
+            */
+
+            alarmInterval =
+                setInterval(() => {
+
+                    beep();
+
+                }, 700);
+
+        }
+
+
+        /* =====================================================
+           STOP ALARM
+        ===================================================== */
+
+        function stopAlarm() {
+
+            alarmPlaying = false;
+
+
+            if (alarmInterval) {
+
+                clearInterval(
+                    alarmInterval
+                );
+
+                alarmInterval = null;
+
+            }
+
+
+            if (alarmOscillator) {
+
+                try {
+
+                    alarmOscillator.stop();
+
+                }
+
+                catch (error) {
+
+                    // Already stopped
+
+                }
+
+                alarmOscillator = null;
+
+            }
+
+
+            if (alarmContext) {
+
+                alarmContext.close();
+
+                alarmContext = null;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           FINISH SESSION
+        ===================================================== */
+
+        function finishSession() {
+
+            pauseTimer();
+
+
+            /*
+                Start continuous alarm
+            */
+
+            startAlarm();
+
+
+            /*
+                Show STOP ALARM button
+            */
+
+            stopAlarmBtn.classList.add(
+                "show"
+            );
+
+
+            /*
+                Show popup
+            */
+
+            alarmModal.classList.add(
+                "show"
+            );
+
+
+            /*
+                Notification
+            */
+
+            showNotification(
+                currentMode === "pomodoro"
+                    ? "Pomodoro completed! 🎉"
+                    : "Break finished!"
+            );
+
+
+            /*
+                Browser notification
+            */
+
+            if (
+                settings.notification &&
+                "Notification" in window &&
+                Notification.permission ===
+                "granted"
+            ) {
+
+                new Notification(
+                    currentMode === "pomodoro"
+                        ? "Pomodoro completed!"
+                        : "Break finished!",
+                    {
+                        body:
+                            currentMode === "pomodoro"
+                                ? "Your focus session is finished."
+                                : "Your break is finished."
+                    }
+                );
+
+            }
+
+
+            /*
+                Count completed Pomodoro
+            */
+
+            if (
+                currentMode ===
+                "pomodoro"
+            ) {
+
+                completedSessions++;
+
+                localStorage.setItem(
+                    "completedSessions",
+                    completedSessions
+                );
+
+                updateDots();
+
+            }
+
+        }
+
+
+        /* =====================================================
+           CHANGE MODE
+        ===================================================== */
+
+        function setMode(mode) {
+
+            pauseTimer();
+
+            currentMode = mode;
+
+            timerSeconds =
+                getDuration(mode);
+
+            totalSeconds =
+                timerSeconds;
+
+
+            tabs.forEach(tab => {
+
+                tab.classList.toggle(
+                    "active",
+                    tab.dataset.mode === mode
+                );
+
+            });
+
+
+            updateDisplay();
+
+        }
+
+
+        /* =====================================================
+           SKIP
+        ===================================================== */
+
+        function skipSession() {
+
+            if (alarmPlaying) {
+
+                stopAlarm();
+
+                alarmModal.classList.remove(
+                    "show"
+                );
+
+                stopAlarmBtn.classList.remove(
+                    "show"
+                );
+
+            }
+
+
+            pauseTimer();
+
+
+            if (
+                currentMode ===
+                "pomodoro"
+            ) {
+
+                setMode("short");
+
+            }
+
+            else {
+
+                setMode("pomodoro");
+
+            }
+
+
+            showNotification(
+                "Session skipped"
+            );
+
+        }
+
+
+        /* =====================================================
+           SESSION DOTS
+        ===================================================== */
+
+        function updateDots() {
+
+            dots.forEach(
+                (dot, index) => {
+
+                    dot.classList.toggle(
+                        "completed",
+                        index <
+                        (completedSessions % 4)
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           STOP ALARM BUTTON
+        ===================================================== */
+
+        stopAlarmBtn.addEventListener(
+            "click",
+            () => {
+
+                stopAlarm();
+
+                stopAlarmBtn.classList.remove(
+                    "show"
+                );
+
+                alarmModal.classList.remove(
+                    "show"
+                );
+
+
+                /*
+                    Prepare next session
+                */
+
+                if (
+                    currentMode ===
+                    "pomodoro"
+                ) {
+
+                    if (
+                        completedSessions % 4 ===
+                        0
+                    ) {
+
+                        setMode("long");
+
+                    }
+
+                    else {
+
+                        setMode("short");
+
+                    }
+
+                }
+
+                else {
+
+                    setMode("pomodoro");
+
+                }
+
+
+                showNotification(
+                    "Alarm stopped. Next session is ready."
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           STOP ALARM + START NEXT
+        ===================================================== */
+
+        nextBtn.addEventListener(
+            "click",
+            () => {
+
+                stopAlarm();
+
+                alarmModal.classList.remove(
+                    "show"
+                );
+
+                stopAlarmBtn.classList.remove(
+                    "show"
+                );
+
+
+                if (
+                    currentMode ===
+                    "pomodoro"
+                ) {
+
+                    if (
+                        completedSessions % 4 ===
+                        0
+                    ) {
+
+                        setMode("long");
+
+                    }
+
+                    else {
+
+                        setMode("short");
+
+                    }
+
+                }
+
+                else {
+
+                    setMode("pomodoro");
+
+                }
+
+
+                setTimeout(() => {
+
+                    startTimer();
+
+                }, 300);
+
+            }
+        );
+
+
+        /* =====================================================
+           DONE BUTTON
+        ===================================================== */
+
+        doneBtn.addEventListener(
+            "click",
+            () => {
+
+                stopAlarm();
+
+                alarmModal.classList.remove(
+                    "show"
+                );
+
+                stopAlarmBtn.classList.remove(
+                    "show"
+                );
+
+
+                /*
+                    Prepare next session
+                */
+
+                if (
+                    currentMode ===
+                    "pomodoro"
+                ) {
+
+                    if (
+                        completedSessions % 4 ===
+                        0
+                    ) {
+
+                        setMode("long");
+
+                    }
+
+                    else {
+
+                        setMode("short");
+
+                    }
+
+                }
+
+                else {
+
+                    setMode("pomodoro");
+
+                }
+
+
+                showNotification(
+                    "Alarm stopped. Great job!"
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           TABS
+        ===================================================== */
+
+        tabs.forEach(tab => {
+
+            tab.addEventListener(
+                "click",
+                () => {
+
+                    if (alarmPlaying) {
+                        return;
+                    }
+
+                    setMode(
+                        tab.dataset.mode
+                    );
+
+                }
+            );
+
+        });
+
+
+        /* =====================================================
+           START BUTTON
+        ===================================================== */
+
+        startBtn.addEventListener(
+            "click",
+            startTimer
+        );
+
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        resetBtn.addEventListener(
+            "click",
+            resetTimer
+        );
+
+
+        /* =====================================================
+           SKIP
+        ===================================================== */
+
+        skipBtn.addEventListener(
+            "click",
+            skipSession
+        );
+
+
+        /* =====================================================
+           SETTINGS OPEN
+        ===================================================== */
+
+        settingsBtn.addEventListener(
+            "click",
+            () => {
+
+                loadSettingsUI();
+
+                settingsModal.classList.add(
+                    "show"
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           CLOSE SETTINGS
+        ===================================================== */
+
+        closeSettings.addEventListener(
+            "click",
+            () => {
+
+                settingsModal.classList.remove(
+                    "show"
+                );
+
+            }
+        );
+
+
+        /* Click outside settings */
+
+        settingsModal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    settingsModal
+                ) {
+
+                    settingsModal.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           SAVE SETTINGS
+        ===================================================== */
+
+        saveSettings.addEventListener(
+            "click",
+            async () => {
+
+                settings.pomodoro =
+                    Math.max(
+                        1,
+                        Number(
+                            pomodoroInput.value
+                        )
+                    );
+
+
+                settings.short =
+                    Math.max(
+                        1,
+                        Number(
+                            shortInput.value
+                        )
+                    );
+
+
+                settings.long =
+                    Math.max(
+                        1,
+                        Number(
+                            longInput.value
+                        )
+                    );
+
+
+                settings.autoStart =
+                    autoStart.checked;
+
+
+                settings.sound =
+                    soundEnabled.checked;
+
+
+                settings.notification =
+                    notificationEnabled.checked;
+
+
+                localStorage.setItem(
+                    "pomodoroSettings",
+                    JSON.stringify(settings)
+                );
+
+
+                /*
+                    Browser notification permission
+                */
+
+                if (
+                    settings.notification &&
+                    "Notification" in window &&
+                    Notification.permission ===
+                    "default"
+                ) {
+
+                    await Notification.requestPermission();
+
+                }
+
+
+                resetTimer();
+
+
+                settingsModal.classList.remove(
+                    "show"
+                );
+
+
+                showNotification(
+                    "Settings saved"
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           FULLSCREEN
+        ===================================================== */
+
+        fullscreenBtn.addEventListener(
+            "click",
+            async () => {
+
+                if (
+                    !document.fullscreenElement
+                ) {
+
+                    await document.documentElement
+                        .requestFullscreen();
+
+                }
+
+                else {
+
+                    await document.exitFullscreen();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           NOTIFICATION
+        ===================================================== */
+
+        function showNotification(message) {
+
+            notificationBox.textContent =
+                message;
+
+            notificationBox.classList.add(
+                "show"
+            );
+
+
+            setTimeout(() => {
+
+                notificationBox.classList.remove(
+                    "show"
+                );
+
+            }, 2500);
+
+        }
+
+
+        /* =====================================================
+           KEYBOARD SHORTCUTS
+        ===================================================== */
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.target.tagName ===
+                    "INPUT"
+                ) {
+                    return;
+                }
+
+
+                /* Space */
+
+                if (
+                    event.code === "Space"
+                ) {
+
+                    event.preventDefault();
+
+                    if (!alarmPlaying) {
+
+                        startTimer();
+
+                    }
+
+                }
+
+
+                /* R = Reset */
+
+                if (
+                    event.key.toLowerCase() ===
+                    "r"
+                ) {
+
+                    resetTimer();
+
+                }
+
+
+                /* S = Skip */
+
+                if (
+                    event.key.toLowerCase() ===
+                    "s"
+                ) {
+
+                    skipSession();
+
+                }
+
+
+                /* A = Stop Alarm */
+
+                if (
+                    event.key.toLowerCase() ===
+                    "a"
+                ) {
+
+                    if (alarmPlaying) {
+
+                        stopAlarmBtn.click();
+
+                    }
+
+                }
+
+
+                /* Escape */
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    settingsModal.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           INITIALIZE
+        ===================================================== */
+
+        updateDisplay();
+
+    </script>
+
+</body>
+
+</html>
