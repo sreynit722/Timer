@@ -4,11 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#d58a86">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Pomodoro Timer">
-    <link rel="manifest" href="manifest.webmanifest">
 
     <title>Timer</title>
 
@@ -355,26 +350,6 @@
             transform: translateY(-2px);
         }
 
-
-
-        .install-btn {
-            display: none;
-        }
-
-        .install-help {
-            display: none;
-            margin-top: 14px;
-            padding: 12px 16px;
-            border-radius: 14px;
-            background: rgba(255,255,255,0.12);
-            font-size: 12px;
-            line-height: 1.5;
-            text-align: center;
-        }
-
-        .install-help.show {
-            display: block;
-        }
 
         /* =========================
            SESSION DOTS
@@ -969,13 +944,13 @@
             .controls {
                 width: 100%;
                 justify-content: center;
-                gap: clamp(6px, 2.2vw, 12px);
+                gap: clamp(8px, 3vw, 14px);
                 margin-top: 24px;
             }
 
             .icon-btn {
-                width: clamp(44px, 13vw, 58px);
-                height: clamp(44px, 13vw, 58px);
+                width: clamp(48px, 14vw, 58px);
+                height: clamp(48px, 14vw, 58px);
                 flex: 0 0 auto;
                 font-size: 22px;
                 touch-action: manipulation;
@@ -1222,6 +1197,89 @@
         }
 
     </style>
+
+<style id="iphone-14-portrait-fix">
+/* iPhone 14 / iOS portrait layout */
+html, body {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+}
+
+/* Keep the complete app centered and inside the iPhone 14 portrait viewport. */
+body > * {
+  max-width: 100%;
+}
+
+@media (orientation: portrait) and (max-width: 430px) {
+  body {
+    align-items: center;
+    justify-content: center;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  /* Prevent fixed desktop widths from pushing the page sideways. */
+  .container, .app, .app-container, .main-container, main {
+    width: min(100%, 430px) !important;
+    max-width: 430px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
+  }
+
+  /* Keep controls centered on narrow portrait screens. */
+  .controls, .timer-controls, .button-group {
+    max-width: 100%;
+    justify-content: center;
+  }
+
+  /* Avoid oversized timer text on iPhone 14. */
+  #timer, .timer, .time-display {
+    max-width: 100%;
+    overflow: hidden;
+    text-align: center;
+  }
+}
+
+/* iPhone 14 portrait is 390 CSS px wide. */
+@media only screen
+  and (device-width: 390px)
+  and (device-height: 844px)
+  and (-webkit-device-pixel-ratio: 3)
+  and (orientation: portrait) {
+  body {
+    min-height: 844px;
+    min-height: 100dvh;
+  }
+}
+
+/* Landscape: keep the existing responsive design, but still center the app. */
+@media (orientation: landscape) {
+  body {
+    align-items: center;
+    justify-content: center;
+  }
+}
+</style>
+
 </head>
 
 
@@ -1311,18 +1369,11 @@
                     <button class="icon-btn" id="fullscreenBtn" title="Fullscreen" aria-label="Fullscreen">
                         ⛶
                     </button>
-                    <button class="icon-btn" id="installBtn" title="Install" aria-label="Install">
-                        ＋
-                    </button>
 
                 </div>
 
 
                 <!-- SESSION DOTS -->
-
-                <div class="install-help" id="installHelp">
-                    On iPhone: tap <b>Share</b> in Safari, then choose <b>Add to Home Screen</b>.
-                </div>
 
                 <div class="session-dots" id="sessionDots">
 
@@ -2676,48 +2727,6 @@
             }
         );
 
-
-
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("./sw.js").catch(() => {});
-            });
-        }
-
-        /* =====================================================
-           IPHONE / PWA INSTALL
-        ===================================================== */
-
-        const installBtn = document.getElementById("installBtn");
-        const installHelp = document.getElementById("installHelp");
-        let deferredInstallPrompt = null;
-
-        window.addEventListener("beforeinstallprompt", (event) => {
-            event.preventDefault();
-            deferredInstallPrompt = event;
-            if (installBtn) installBtn.style.display = "flex";
-        });
-
-        if (installBtn) {
-            installBtn.addEventListener("click", async () => {
-                if (deferredInstallPrompt) {
-                    deferredInstallPrompt.prompt();
-                    await deferredInstallPrompt.userChoice;
-                    deferredInstallPrompt = null;
-                } else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                    installHelp.classList.toggle("show");
-                    showNotification("Safari: Share → Add to Home Screen");
-                } else {
-                    showNotification("Use your browser's Add to Home Screen option.");
-                }
-            });
-        }
-
-        window.addEventListener("appinstalled", () => {
-            if (installBtn) installBtn.style.display = "none";
-            if (installHelp) installHelp.classList.remove("show");
-            showNotification("Pomodoro installed!");
-        });
 
         /* =====================================================
            FULLSCREEN
