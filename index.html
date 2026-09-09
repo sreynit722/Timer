@@ -841,7 +841,7 @@
             }
 
         }
-    
+
         /* =========================
            ENHANCED MOBILE RESPONSIVE
            ========================= */
@@ -870,14 +870,15 @@
         /* Tablets and phones */
         @media (max-width: 700px) {
             body {
-                align-items: flex-start;
+                align-items: center;
+                justify-content: center;
+
             }
 
             .app {
-                align-items: flex-start;
-                padding: max(12px, env(safe-area-inset-top))
-                         10px
-                         max(16px, env(safe-area-inset-bottom));
+                align-items: center;
+                justify-content: center;
+                padding: max(12px, env(safe-area-inset-top)) 10px max(16px, env(safe-area-inset-bottom));
             }
 
             .timer-card {
@@ -998,7 +999,8 @@
 
             .setting input[type="number"] {
                 min-height: 48px;
-                font-size: 16px; /* prevents iOS zoom */
+                font-size: 16px;
+                /* prevents iOS zoom */
             }
 
             .switch-row {
@@ -1152,7 +1154,7 @@
             touch-action: manipulation;
         }
 
-    
+
         /* =========================
            FULLSCREEN MOBILE MODE
            ========================= */
@@ -1195,90 +1197,168 @@
                 min-height: 100dvh;
             }
         }
-
     </style>
 
-<style id="iphone-14-portrait-fix">
-/* iPhone 14 / iOS portrait layout */
-html, body {
-  width: 100%;
-  min-width: 0;
-  min-height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-}
+    <style id="iphone-14-portrait-fix">
+        /* iPhone 14 / iOS portrait layout */
+        html,
+        body {
+            width: 100%;
+            min-width: 0;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
 
-body {
-  min-height: 100dvh;
-  min-height: -webkit-fill-available;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding:
-    max(12px, env(safe-area-inset-top))
-    max(12px, env(safe-area-inset-right))
-    max(12px, env(safe-area-inset-bottom))
-    max(12px, env(safe-area-inset-left));
-}
+        body {
+            min-height: 100dvh;
+            min-height: -webkit-fill-available;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding:
+                max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+        }
 
-/* Keep the complete app centered and inside the iPhone 14 portrait viewport. */
-body > * {
-  max-width: 100%;
-}
+        /* Keep the complete app centered and inside the iPhone 14 portrait viewport. */
+        body>* {
+            max-width: 100%;
+        }
 
-@media (orientation: portrait) and (max-width: 430px) {
-  body {
-    align-items: center;
-    justify-content: center;
-    padding-top: max(12px, env(safe-area-inset-top));
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
-  }
+        @media (orientation: portrait) and (max-width: 430px) {
+            body {
+                align-items: center;
+                justify-content: center;
+                padding-top: max(12px, env(safe-area-inset-top));
+                padding-bottom: max(12px, env(safe-area-inset-bottom));
+            }
 
-  /* Prevent fixed desktop widths from pushing the page sideways. */
-  .container, .app, .app-container, .main-container, main {
-    width: min(100%, 430px) !important;
-    max-width: 430px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    box-sizing: border-box;
-  }
+            /* Prevent fixed desktop widths from pushing the page sideways. */
+            .container,
+            .app,
+            .app-container,
+            .main-container,
+            main {
+                width: min(100%, 430px) !important;
+                max-width: 430px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                box-sizing: border-box;
+            }
 
-  /* Keep controls centered on narrow portrait screens. */
-  .controls, .timer-controls, .button-group {
-    max-width: 100%;
-    justify-content: center;
-  }
+            /* Keep controls centered on narrow portrait screens. */
+            .controls,
+            .timer-controls,
+            .button-group {
+                max-width: 100%;
+                justify-content: center;
+            }
 
-  /* Avoid oversized timer text on iPhone 14. */
-  #timer, .timer, .time-display {
-    max-width: 100%;
-    overflow: hidden;
-    text-align: center;
-  }
-}
+            /* Avoid oversized timer text on iPhone 14. */
+            #timer,
+            .timer,
+            .time-display {
+                max-width: 100%;
+                overflow: hidden;
+                text-align: center;
+            }
+        }
 
-/* iPhone 14 portrait is 390 CSS px wide. */
-@media only screen
-  and (device-width: 390px)
-  and (device-height: 844px)
-  and (-webkit-device-pixel-ratio: 3)
-  and (orientation: portrait) {
-  body {
-    min-height: 844px;
-    min-height: 100dvh;
-  }
-}
+        /* iPhone 14 portrait is 390 CSS px wide. */
+        @media only screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait) {
+            body {
+                min-height: 844px;
+                min-height: 100dvh;
+            }
+        }
 
-/* Landscape: keep the existing responsive design, but still center the app. */
-@media (orientation: landscape) {
-  body {
-    align-items: center;
-    justify-content: center;
-  }
-}
-</style>
+        /* Landscape: keep the existing responsive design, but still center the app. */
+        @media (orientation: landscape) {
+            body {
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    </style>
+
+
+    <style id="phone-alert-style">
+        @keyframes phoneAlertPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            25% {
+                transform: scale(1.02);
+            }
+
+            50% {
+                transform: scale(.99);
+            }
+
+            75% {
+                transform: scale(1.02);
+            }
+        }
+
+        .phone-alert-active body {
+            animation: phoneAlertPulse .35s ease-in-out 4;
+        }
+    </style>
+    <script id="phone-alert-enhancement">
+        (function () {
+            let ctx = null;
+
+            function audio() {
+                try {
+                    const AC = window.AudioContext || window.webkitAudioContext;
+                    if (!AC) return null;
+                    if (!ctx) ctx = new AC();
+                    if (ctx.state === "suspended") ctx.resume().catch(() => { });
+                    return ctx;
+                } catch (e) { return null; }
+            }
+
+            // Unlock audio on the first user interaction (required by iPhone Safari).
+            document.addEventListener("touchstart", () => audio(), { once: true, passive: true });
+            document.addEventListener("click", () => audio(), { once: true });
+
+            window.playPhoneAlert = function () {
+                // Vibration where supported.
+                try {
+                    if (navigator.vibrate) navigator.vibrate([300, 120, 300, 120, 600]);
+                } catch (e) { }
+
+                // Three short alarm tones.
+                try {
+                    const a = audio();
+                    if (a) {
+                        const now = a.currentTime;
+                        [0, .28, .56].forEach((offset, i) => {
+                            const osc = a.createOscillator();
+                            const gain = a.createGain();
+                            osc.type = "sine";
+                            osc.frequency.value = i === 1 ? 880 : 660;
+                            gain.gain.setValueAtTime(.0001, now + offset);
+                            gain.gain.exponentialRampToValueAtTime(.28, now + offset + .02);
+                            gain.gain.exponentialRampToValueAtTime(.0001, now + offset + .20);
+                            osc.connect(gain);
+                            gain.connect(a.destination);
+                            osc.start(now + offset);
+                            osc.stop(now + offset + .22);
+                        });
+                    }
+                } catch (e) { }
+
+                document.documentElement.classList.add("phone-alert-active");
+                setTimeout(() => document.documentElement.classList.remove("phone-alert-active"), 1800);
+            };
+        })();
+    </script>
 
 </head>
 
@@ -1389,7 +1469,7 @@ body > * {
 
             <!-- BOTTOM LINE -->
 
-            <div class="bottom-line"></div>
+
 
         </div>
 
