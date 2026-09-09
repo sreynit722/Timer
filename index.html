@@ -3,7 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#d58a86">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Pomodoro Timer">
+    <link rel="manifest" href="manifest.webmanifest">
 
     <title>Timer</title>
 
@@ -350,6 +355,26 @@
             transform: translateY(-2px);
         }
 
+
+
+        .install-btn {
+            display: none;
+        }
+
+        .install-help {
+            display: none;
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.12);
+            font-size: 12px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .install-help.show {
+            display: block;
+        }
 
         /* =========================
            SESSION DOTS
@@ -841,7 +866,7 @@
             }
 
         }
-
+    
         /* =========================
            ENHANCED MOBILE RESPONSIVE
            ========================= */
@@ -875,7 +900,9 @@
 
             .app {
                 align-items: flex-start;
-                padding: max(12px, env(safe-area-inset-top)) 10px max(16px, env(safe-area-inset-bottom));
+                padding: max(12px, env(safe-area-inset-top))
+                         10px
+                         max(16px, env(safe-area-inset-bottom));
             }
 
             .timer-card {
@@ -942,13 +969,13 @@
             .controls {
                 width: 100%;
                 justify-content: center;
-                gap: clamp(8px, 3vw, 14px);
+                gap: clamp(6px, 2.2vw, 12px);
                 margin-top: 24px;
             }
 
             .icon-btn {
-                width: clamp(48px, 14vw, 58px);
-                height: clamp(48px, 14vw, 58px);
+                width: clamp(44px, 13vw, 58px);
+                height: clamp(44px, 13vw, 58px);
                 flex: 0 0 auto;
                 font-size: 22px;
                 touch-action: manipulation;
@@ -996,8 +1023,7 @@
 
             .setting input[type="number"] {
                 min-height: 48px;
-                font-size: 16px;
-                /* prevents iOS zoom */
+                font-size: 16px; /* prevents iOS zoom */
             }
 
             .switch-row {
@@ -1151,7 +1177,7 @@
             touch-action: manipulation;
         }
 
-
+    
         /* =========================
            FULLSCREEN MOBILE MODE
            ========================= */
@@ -1194,6 +1220,7 @@
                 min-height: 100dvh;
             }
         }
+
     </style>
 </head>
 
@@ -1284,11 +1311,18 @@
                     <button class="icon-btn" id="fullscreenBtn" title="Fullscreen" aria-label="Fullscreen">
                         ⛶
                     </button>
+                    <button class="icon-btn" id="installBtn" title="Install" aria-label="Install">
+                        ＋
+                    </button>
 
                 </div>
 
 
                 <!-- SESSION DOTS -->
+
+                <div class="install-help" id="installHelp">
+                    On iPhone: tap <b>Share</b> in Safari, then choose <b>Add to Home Screen</b>.
+                </div>
 
                 <div class="session-dots" id="sessionDots">
 
@@ -2642,6 +2676,48 @@
             }
         );
 
+
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            });
+        }
+
+        /* =====================================================
+           IPHONE / PWA INSTALL
+        ===================================================== */
+
+        const installBtn = document.getElementById("installBtn");
+        const installHelp = document.getElementById("installHelp");
+        let deferredInstallPrompt = null;
+
+        window.addEventListener("beforeinstallprompt", (event) => {
+            event.preventDefault();
+            deferredInstallPrompt = event;
+            if (installBtn) installBtn.style.display = "flex";
+        });
+
+        if (installBtn) {
+            installBtn.addEventListener("click", async () => {
+                if (deferredInstallPrompt) {
+                    deferredInstallPrompt.prompt();
+                    await deferredInstallPrompt.userChoice;
+                    deferredInstallPrompt = null;
+                } else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                    installHelp.classList.toggle("show");
+                    showNotification("Safari: Share → Add to Home Screen");
+                } else {
+                    showNotification("Use your browser's Add to Home Screen option.");
+                }
+            });
+        }
+
+        window.addEventListener("appinstalled", () => {
+            if (installBtn) installBtn.style.display = "none";
+            if (installHelp) installHelp.classList.remove("show");
+            showNotification("Pomodoro installed!");
+        });
 
         /* =====================================================
            FULLSCREEN
