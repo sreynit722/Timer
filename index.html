@@ -841,7 +841,7 @@
             }
 
         }
-    
+
         /* =========================
            ENHANCED MOBILE RESPONSIVE
            ========================= */
@@ -875,9 +875,7 @@
 
             .app {
                 align-items: flex-start;
-                padding: max(12px, env(safe-area-inset-top))
-                         10px
-                         max(16px, env(safe-area-inset-bottom));
+                padding: max(12px, env(safe-area-inset-top)) 10px max(16px, env(safe-area-inset-bottom));
             }
 
             .timer-card {
@@ -998,7 +996,8 @@
 
             .setting input[type="number"] {
                 min-height: 48px;
-                font-size: 16px; /* prevents iOS zoom */
+                font-size: 16px;
+                /* prevents iOS zoom */
             }
 
             .switch-row {
@@ -1152,6 +1151,49 @@
             touch-action: manipulation;
         }
 
+
+        /* =========================
+           FULLSCREEN MOBILE MODE
+           ========================= */
+
+        :fullscreen {
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+        }
+
+        :fullscreen .app {
+            min-height: 100dvh;
+            padding-top: max(12px, env(safe-area-inset-top));
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+        }
+
+        @media (max-width: 700px) {
+            :fullscreen .app {
+                padding-left: max(8px, env(safe-area-inset-left));
+                padding-right: max(8px, env(safe-area-inset-right));
+            }
+
+            :fullscreen .timer-card {
+                min-height: calc(100dvh - 24px);
+                justify-content: center;
+            }
+
+            :fullscreen .bottom-line {
+                display: none;
+            }
+        }
+
+        /* iOS standalone / Android installed PWA */
+        @media (display-mode: standalone) {
+            body {
+                min-height: 100dvh;
+            }
+
+            .app {
+                min-height: 100dvh;
+            }
+        }
     </style>
 </head>
 
@@ -1239,7 +1281,7 @@
                         ⏭
                     </button>
 
-                    <button class="icon-btn" id="fullscreenBtn" title="Fullscreen">
+                    <button class="icon-btn" id="fullscreenBtn" title="Fullscreen" aria-label="Fullscreen">
                         ⛶
                     </button>
 
@@ -2605,27 +2647,56 @@
            FULLSCREEN
         ===================================================== */
 
-        fullscreenBtn.addEventListener(
-            "click",
-            async () => {
+        /* =====================================================
+           FULLSCREEN - DESKTOP + MOBILE
+           ===================================================== */
 
-                if (
-                    !document.fullscreenElement
-                ) {
-
-                    await document.documentElement
-                        .requestFullscreen();
-
-                }
-
-                else {
-
+        async function enterFullscreen() {
+            try {
+                if (document.fullscreenElement) {
                     await document.exitFullscreen();
-
+                    return;
                 }
 
+                const element = document.documentElement;
+
+                if (element.requestFullscreen) {
+                    await element.requestFullscreen();
+
+                    /* Hide mobile browser UI when supported */
+                    if (screen.orientation && screen.orientation.lock) {
+                        try {
+                            await screen.orientation.lock("portrait");
+                        } catch (error) {
+                            /* Orientation lock may require installed/PWA mode */
+                        }
+                    }
+                } else {
+                    /* iPhone/iPad Safari does not expose standard
+                       fullscreen for normal web pages. */
+                    showNotification(
+                        "For iPhone, add this app to Home Screen for fullscreen."
+                    );
+                }
+            } catch (error) {
+                showNotification(
+                    "Fullscreen is not available in this browser."
+                );
             }
-        );
+        }
+
+        fullscreenBtn.addEventListener("click", enterFullscreen);
+
+        /* Update icon when fullscreen state changes */
+        document.addEventListener("fullscreenchange", () => {
+            if (document.fullscreenElement) {
+                fullscreenBtn.textContent = "✕";
+                fullscreenBtn.title = "Exit Fullscreen";
+            } else {
+                fullscreenBtn.textContent = "⛶";
+                fullscreenBtn.title = "Fullscreen";
+            }
+        });
 
 
         /* =====================================================
